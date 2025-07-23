@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "unity-context-generator": {
+      "command": "python",
+      "args": ["/path/to/UnitySmartContext/MCP/mcp_server.py"],
+      "cwd": "/path/to/UnitySmartContext"
+    }
+  }
+}

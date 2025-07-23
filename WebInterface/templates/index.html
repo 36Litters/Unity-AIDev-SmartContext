@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity Smart Context Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .input-section, .output-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .input-tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        textarea {
+            height: 300px;
+        }
+
+        .analyze-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 15px;
+        }
+
+        .analyze-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .analyze-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .output-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: #e9ecef;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .output-tab.active {
+            background: #28a745;
+            color: white;
+        }
+
+        .output-content {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .success {
+            color: #155724;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .claude-context {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .copy-button {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .download-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Unity Smart Context Generator</h1>
+            <p>Unity C# 스크립트를 분석하여 Claude AI와 함께 사용할 수 있는 컨텍스트를 생성합니다</p>
+        </div>
+
+        <div class="main-content">
+            <!-- 입력 섹션 -->
+            <div class="input-section">
+                <h2 class="section-title">📝 분석 입력</h2>
+                
+                <div class="input-tabs">
+                    <button class="tab-button active" onclick="switchTab('code')">코드 입력</button>
+                    <button class="tab-button" onclick="switchTab('file')">파일 경로</button>
+                    <button class="tab-button" onclick="switchTab('directory')">디렉토리</button>
+                </div>
+
+                <div id="code-tab" class="tab-content active">
+                    <textarea id="code-input" placeholder="Unity C# 스크립트 코드를 여기에 입력하세요...
+
+예시:
+using UnityEngine;
+
+public class PlayerController : MonoBehaviour
+{
+    public float speed = 5.0f;
+    private Rigidbody rb;
+    
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+    
+    void Update()
+    {
+        float horizontal = Input.GetAxis(&quot;Horizontal&quot;);
+        float vertical = Input.GetAxis(&quot;Vertical&quot;);
+        
+        Vector3 movement = new Vector3(horizontal, 0, vertical);
+        rb.AddForce(movement * speed);
+    }
+}"></textarea>
+                    <input type="text" id="filename-input" placeholder="파일명 (선택사항, 예: PlayerController.cs)" style="margin-top: 10px;">
+                </div>
+
+                <div id="file-tab" class="tab-content">
+                    <input type="text" id="file-path-input" placeholder="Unity C# 파일 경로 (예: /path/to/PlayerController.cs)">
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        분석할 Unity C# 스크립트 파일의 전체 경로를 입력하세요.
+                    </p>
+                </div>
+
+                <div id="directory-tab" class="tab-content">
+                    <input type="text" id="directory-path-input" placeholder="Unity 프로젝트 디렉토리 경로 (예: /path/to/Assets/Scripts)">
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        Unity 프로젝트의 Scripts 디렉토리 경로를 입력하세요. 하위 디렉토리의 모든 .cs 파일을 분석합니다.
+                    </p>
+                </div>
+
+                <button class="analyze-button" onclick="analyzeCode()" id="analyze-btn">
+                    🔍 분석 시작
+                </button>
+            </div>
+
+            <!-- 출력 섹션 -->
+            <div class="output-section">
+                <h2 class="section-title">📊 분석 결과</h2>
+                
+                <div class="output-tabs">
+                    <button class="output-tab active" onclick="switchOutput('claude')">Claude 컨텍스트</button>
+                    <button class="output-tab" onclick="switchOutput('summary')">요약</button>
+                    <button class="output-tab" onclick="switchOutput('detailed')">상세</button>
+                    <button class="output-tab" onclick="switchOutput('raw')">원본</button>
+                </div>
+
+                <div class="output-content" id="output-display">
+                    <div style="text-align: center; padding: 50px; color: #999;">
+                        Unity 스크립트를 분석하면 결과가 여기에 표시됩니다.
+                        <br><br>
+                        🎯 <strong>Claude 컨텍스트</strong>: Claude AI와 함께 사용할 최적화된 컨텍스트
+                        <br>
+                        📋 <strong>요약</strong>: 빠른 개요 및 품질 점수
+                        <br>
+                        📖 <strong>상세</strong>: 완전한 분석 리포트
+                        <br>
+                        🔧 <strong>원본</strong>: 분석 도구의 원본 출력
+                    </div>
+                </div>
+
+                <button class="download-button" onclick="downloadResults()" id="download-btn" style="display: none;">
+                    💾 결과 다운로드
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAnalysisResult = null;
+
+        function switchTab(tabName) {
+            // 탭 버튼 활성화
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // 탭 컨텐츠 표시
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        function switchOutput(outputType) {
+            // 출력 탭 활성화
+            document.querySelectorAll('.output-tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (!currentAnalysisResult) return;
+
+            const outputDisplay = document.getElementById('output-display');
+            
+            switch(outputType) {
+                case 'claude':
+                    outputDisplay.innerHTML = `
+                        <div class="claude-context">
+                            <h3>🤖 Claude AI용 컨텍스트</h3>
+                            <p>아래 내용을 Claude에게 복사해서 붙여넣으세요:</p>
+                            <button class="copy-button" onclick="copyToClipboard('claude-context')">📋 복사</button>
+                        </div>
+                        <pre id="claude-context">${currentAnalysisResult.claude_context || '컨텍스트 생성 실패'}</pre>
+                    `;
+                    break;
+                case 'summary':
+                    outputDisplay.innerHTML = `<pre>${currentAnalysisResult.analysis?.summary || '요약 없음'}</pre>`;
+                    break;
+                case 'detailed':
+                    outputDisplay.innerHTML = `<pre>${currentAnalysisResult.analysis?.detailed_report || '상세 리포트 없음'}</pre>`;
+                    break;
+                case 'raw':
+                    outputDisplay.innerHTML = `<pre>${currentAnalysisResult.stdout || '원본 출력 없음'}</pre>`;
+                    break;
+            }
+        }
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('클립보드에 복사되었습니다! Claude에게 붙여넣기 하세요.');
+            });
+        }
+
+        async function analyzeCode() {
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const outputDisplay = document.getElementById('output-display');
+            
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = '🔄 분석 중...';
+            
+            outputDisplay.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Unity 스크립트를 분석하고 있습니다...<br>
+                    잠시만 기다려주세요.
+                </div>
+            `;
+
+            try {
+                const activeTab = document.querySelector('.tab-button.active').textContent;
+                let requestData = {};
+
+                if (activeTab === '코드 입력') {
+                    const code = document.getElementById('code-input').value.trim();
+                    const filename = document.getElementById('filename-input').value.trim() || 'script.cs';
+                    
+                    if (!code) {
+                        throw new Error('코드를 입력해주세요.');
+                    }
+                    
+                    requestData = { code, filename };
+                } else if (activeTab === '파일 경로') {
+                    const filePath = document.getElementById('file-path-input').value.trim();
+                    
+                    if (!filePath) {
+                        throw new Error('파일 경로를 입력해주세요.');
+                    }
+                    
+                    requestData = { file_path: filePath };
+                } else if (activeTab === '디렉토리') {
+                    const directoryPath = document.getElementById('directory-path-input').value.trim();
+                    
+                    if (!directoryPath) {
+                        throw new Error('디렉토리 경로를 입력해주세요.');
+                    }
+                    
+                    requestData = { directory_path: directoryPath };
+                }
+
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    currentAnalysisResult = result;
+                    
+                    outputDisplay.innerHTML = `
+                        <div class="success">
+                            ✅ 분석이 완료되었습니다! Claude 컨텍스트 탭을 확인하세요.
+                        </div>
+                        <div class="claude-context">
+                            <h3>🤖 Claude AI용 컨텍스트 (미리보기)</h3>
+                            <button class="copy-button" onclick="copyToClipboard('claude-preview')">📋 전체 복사</button>
+                            <pre id="claude-preview">${result.claude_context.substring(0, 500)}...</pre>
+                        </div>
+                    `;
+                    
+                    document.getElementById('download-btn').style.display = 'block';
+                } else {
+                    outputDisplay.innerHTML = `
+                        <div class="error">
+                            ❌ 분석 실패: ${result.error}
+                        </div>
+                        <pre>${result.stdout || ''}</pre>
+                    `;
+                }
+
+            } catch (error) {
+                outputDisplay.innerHTML = `
+                    <div class="error">
+                        ❌ 오류 발생: ${error.message}
+                    </div>
+                `;
+            } finally {
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = '🔍 분석 시작';
+            }
+        }
+
+        async function downloadResults() {
+            try {
+                const response = await fetch('/api/download_results');
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'unity_analysis_results.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    alert('다운로드 실패');
+                }
+            } catch (error) {
+                alert('다운로드 중 오류 발생: ' + error.message);
+            }
+        }
+
+        // Enter 키로 분석 실행
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.key === 'Enter') {
+                analyzeCode();
+            }
+        });
+    </script>
+</body>
+</html>
