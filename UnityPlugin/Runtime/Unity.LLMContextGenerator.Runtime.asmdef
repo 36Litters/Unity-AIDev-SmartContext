@@ -1,0 +1,14 @@
+{
+    "name": "Unity.LLMContextGenerator.Runtime",
+    "rootNamespace": "Unity.LLMContextGenerator",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

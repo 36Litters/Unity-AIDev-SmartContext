@@ -1,0 +1,19 @@
+{
+    "name": "Unity.LLMContextGenerator.Editor",
+    "rootNamespace": "Unity.LLMContextGenerator.Editor",
+    "references": [
+        "GUID:f06555f75b070af458a003d92f9efb00",
+        "Unity.LLMContextGenerator.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

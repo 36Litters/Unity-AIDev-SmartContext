@@ -1,0 +1,79 @@
+# Build directories
+build/
+cmake-build-*/
+
+# Object files
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+
+# Executables
+*.exe
+unity_context_generator
+unity_context_tests
+
+# Debug files
+*.pdb
+*.dSYM/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Output files
+unity_context_analysis/
+test_output/
+output/
+
+# Test files
+test_*.cs
+sample_*.cs
+
+# Environment files
+.env
+*.key
+
+# Tree-sitter repositories (external dependencies)
+tree-sitter-c-sharp/
+tree-sitter/
+
+# Tree-sitter compiled files
+*.o
+
+# Unity Plugin compiled files
+UnityPlugin/Native/x64/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# API keys and secrets
+*api_key*
+*.secret
+config.json
+unity_context_config.json
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# Package files
+*.tar.gz
+*.zip
+*.rar

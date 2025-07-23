@@ -1,0 +1,36 @@
+{
+  "name": "com.unity.llm-context-generator",
+  "version": "1.0.0",
+  "displayName": "LLM Context Generator",
+  "description": "Generates LLM-friendly context metadata for Unity C# projects, optimized for Claude Code and other AI development tools.",
+  "unity": "2022.3",
+  "unityRelease": "0b1",
+  "documentationUrl": "https://github.com/unity-llm-context-generator/docs",
+  "changelogUrl": "https://github.com/unity-llm-context-generator/CHANGELOG.md",
+  "licensesUrl": "https://github.com/unity-llm-context-generator/LICENSE.md",
+  "dependencies": {},
+  "keywords": [
+    "llm",
+    "ai",
+    "context",
+    "analysis",
+    "claude-code",
+    "code-generation",
+    "monobehaviour",
+    "architecture"
+  ],
+  "author": {
+    "name": "Unity LLM Context Team",
+    "email": "contact@unity-llm-context.dev",
+    "url": "https://unity-llm-context.dev"
+  },
+  "type": "tool",
+  "hideInEditor": false,
+  "samples": [
+    {
+      "displayName": "Basic Usage Example",
+      "description": "Shows how to analyze a Unity project and generate LLM context",
+      "path": "Samples~/BasicUsage"
+    }
+  ]
+}
